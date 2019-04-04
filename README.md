@@ -73,6 +73,7 @@ http-server
       3. A more ribust testing framework
       4. Factories instead of fixtures
     * I chose not to add regression tests due to time considerations
+    * If a user clicks on a thumbnail from the list, that video will play and then fall to the bottom of the list, changing the order. If the original last video plays ("Nice"), the autoplay will still stop after it, so some videos may not have played. Due to time constraints, I did not fix this bug, but I am aware of it. The simplest solution would be to unlink the thumbnails but that didn't seem like a great user experience.
 
 # Feature Specifications
 ## Implement autoplay for playlist
