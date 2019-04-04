@@ -7,8 +7,8 @@ var Playlist = {
     var el = clone.children[0];
 
     el.querySelector('.thumbnail').setAttribute('src', media.thumbnail.url);
-    // Add data-hash-id to be able to easily select this element for adding the overlay
-    el.querySelector('.custom-overlay-text').setAttribute('data-hash-id', media.hashed_id);
+    // Add data-hash-id to be able to easily select this element for adding the thumbnail overlay
+    el.querySelector('.thumbnail-overlay').setAttribute('data-hash-id', media.hashed_id);
     el.querySelector('.title').innerText = media.name;
     el.querySelector('.duration').innerText = Utils.formatTime(media.duration);
     el.querySelector('.media-content').setAttribute(
@@ -20,14 +20,15 @@ var Playlist = {
   }
 };
 
-class MyOverlay {
+class VideoOverlay {
   constructor (video) {
     this.video = video;
     this._isOpen = false;
   }
 
   mount (rootElem) {
-    this.video.pause();
+    this.video.pause(); // pause video while we add the overlay
+
     const overlay = document.createElement('div');
     const topText = document.createElement('p');
     const bottomText = document.createElement('p');
@@ -107,9 +108,9 @@ class MyOverlay {
 
 window.wistiaInitQueue = window.wistiaInitQueue || [];
 window.wistiaInitQueue.push(function(W) {
-  MyOverlay.type = 'foreground';
-  MyOverlay.handle = 'myOverlay';
-  W.defineControl(MyOverlay);
+  VideoOverlay.type = 'foreground';
+  VideoOverlay.handle = 'VideoOverlay';
+  W.defineControl(VideoOverlay);
 });
 
 (function() {
