@@ -1,8 +1,8 @@
 require 'test_helper'
 
-class PlaylistControllerTest < ActionDispatch::IntegrationTest
+class DashboardControllerTest < ActionDispatch::IntegrationTest
   test 'should get index' do
-    get playlist_path
+    get dashboard_path
     assert_response :success
   end
 end

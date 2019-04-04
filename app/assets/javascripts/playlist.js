@@ -60,6 +60,7 @@ class VideoOverlay {
 
     this.video.bind("play", this.addThumbnailOverlay.bind(this));
     this.video.bind("beforereplace", this.removeThumbnailOverlay.bind(this));
+    this.video.bind("end", this.removeThumbnailOverlay.bind(this));
 
     const countdownInterval = setInterval(this.updateCountdown, 1000);
     setTimeout(this.close.bind(this, countdownInterval), 5000);

@@ -1,3 +1,27 @@
+# Getting Started
+## Prerequisites
+* [Ruby 2.5.3](https://www.ruby-lang.org/en/downloads/)
+* [Bundler](https://bundler.io/)
+
+## Installation
+Installing dependencies:
+```sh
+cd wistia-full-stack-code-challenge
+bundle install
+bundle exec rake db:create
+bundle exec rake db:migrate
+```
+Running the app:
+```sh
+rails s
+```
+_Note: This will run on port 3000 as default, so make sure you have no other apps running on that port_
+
+## Code Challenge Answers
+See below for answers to questions and Part 3 of challenge
+
+---
+
 Wistia Full Stack Developer Challenge
 
 # Overview
@@ -29,16 +53,26 @@ http-server
 # Submission Checklist
 **Please reach out if you need anything clarified or if you have any questions!**
 
-- [ ] Submission meets all sections of Feature Specifications
-- [ ] Code is tested in one browser of your choice
-- [ ] The frontend is accomplished with plain javascript, HTML, and CSS.
-- [ ] The backend is accomplished in Ruby, Ruby on Rails, Python, Elixir, or Node
+- [x] Submission meets all sections of Feature Specifications
+- [x] Code is tested in one browser of your choice
+- [x] The frontend is accomplished with plain javascript, HTML, and CSS.
+- [x] The backend is accomplished in Ruby, Ruby on Rails, Python, Elixir, or Node
   * If you'd like to use a language that's not listed, give us a shout and we'll work with you to find a language that you know and we can evaluate.
-- [ ] Includes a README telling us:
+- [x] Includes a README telling us:
   * the browser and OS used
+    * Google Chrome and macOS Mojave (Version 10.14.2)
   * an explanation of the solution's performance characteristics
+    * In such a small app, performance was not much of an issue in general. However, I deided to add a "filter" to the video_settings#index instead of returning all records in case that this table grew over time
+    * Since there is only one table, there was not any risk of n+1 queries
   * anything you learned or would do differently if doing this again
+    * If I did this again, I think I would start by setting up a new Rails app instead of doing the frontend code and then having to port it over.
   * any other notes you think are relevant
+    * Since this app was so simple, I made some decisions that I would not have done for a production app:
+      1. SQLite would need to change if this app has many users accessing it.
+      2. The API endpoint is not structured to any specs. If this were a more robust app with multiple API endpoints, it may make sense to implement a spec and/or separate the frontend and backend.
+      3. A more ribust testing framework
+      4. Factories instead of fixtures
+    * I chose not to add regression tests due to time considerations
 
 # Feature Specifications
 ## Implement autoplay for playlist
@@ -63,13 +97,16 @@ Imagine a tech lead asks you to design the database for a "search by tag" featur
 
 - [x] Create the schema(s) to support tags
 
-| Tags          |
-| ------------- |
-| id: int       |
-| video_id: int |
-| tag: string   |
+| Tags                 |
+| -------------        |
+| id: int              |
+| video_id: int        |
+| tag: string          |
+| created_at: datetime |
+| updated_at: datetime |
 
 _schema.rb_
+```
 create_table "video_tags", id: :serial, force: :cascade do |t|
   t.integer "video_id"
   t.string "tag", limit: 255
@@ -77,16 +114,34 @@ create_table "video_tags", id: :serial, force: :cascade do |t|
   t.datetime "updated_at"
   t.index ["tag"], name: "index_video_tags_on_tag"
 end
+```
+- [x] Write a query to print the total number of videos with at least 1 play count
 
-- [ ] Write a query to print the total number of videos with at least 1 play count
+Assuming we have a PlayCount DB Table looking something like:
+
+| VideoCounts          |
+| -------------------- |
+| id: int              |
+| video_id: int        |
+| play_count: int      |
+| created_at: datetime |
+| updated_at: datetime |
+
+SQL:
+```
+SELECT play_count
+FROM video_counts
+WHERE video_id = ?
+```
 
 - [x] Write a query to find the video with the most number of tags. If more than one video have the same number of tags, print the one created most recently.
-
+```
 SELECT video_id, COUNT(tag) as tag_count, created_at
 FROM video_tags
 GROUP_BY video_id
 ORDER BY tag_count DESC, created_at DESC
 LIMIT 1;
+```
 
 # What is the purpose of this exercise?
 The goal is to have an interesting discussion about:

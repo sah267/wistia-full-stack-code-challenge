@@ -43,16 +43,17 @@
   left: 0;
   line-height: 75px;
   width: 100%;
-  font-size: 30px;
   margin: 0;
 }
 
 .top-text {
   top: 0;
+  font-size: 30px;
 }
 
 .bottom-text {
   bottom: 0;
+  font-size: 22px;
 }
 
 .countdown {

@@ -12,18 +12,12 @@
 
 ActiveRecord::Schema.define(version: 2019_04_03_180535) do
 
-  create_table "video_options", force: :cascade do |t|
-    t.boolean "visible"
-    t.integer "video_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "video_settings", force: :cascade do |t|
-    t.boolean "visible"
+    t.boolean "visible", default: true
     t.integer "video_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["video_id"], name: "index_video_settings_on_video_id", unique: true
   end
 
 end

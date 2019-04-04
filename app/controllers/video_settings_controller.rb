@@ -1,7 +1,6 @@
 class VideoSettingsController < ApplicationController
   def index
     video_ids = params[:video_ids]
-    puts video_ids
     settings = VideoSetting.where(video_id: video_ids.split(','))
     render json: settings
   end

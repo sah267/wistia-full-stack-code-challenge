@@ -5,5 +5,9 @@ one:
   video_id: 1
 
 two:
-  visible: false
-  video_id: 1
+  visible: true
+  video_id: 2
+
+three:
+  visible: true
+  video_id: 3
