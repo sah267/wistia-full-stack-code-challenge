@@ -23,12 +23,9 @@ var Playlist = {
 class VideoOverlay {
   constructor (video) {
     this.video = video;
-    this._isOpen = false;
   }
 
-  mount (rootElem) {
-    this.video.pause(); // pause video while we add the overlay
-
+  createOverlay () {
     const overlay = document.createElement('div');
     const topText = document.createElement('p');
     const bottomText = document.createElement('p');
@@ -50,6 +47,13 @@ class VideoOverlay {
     overlay.appendChild(countdownText);
     overlay.appendChild(bottomText);
 
+    return overlay;
+  }
+
+  mount (rootElem) {
+    this.video.pause(); // pause video while we add the overlay
+
+    var overlay = this.createOverlay();
     rootElem.appendChild(overlay);
 
     this.overlay = overlay;
@@ -62,47 +66,32 @@ class VideoOverlay {
   }
 
   updateCountdown () {
-    const countdownDiv = document.getElementsByClassName('countdown')[0];
+    const countdownDiv = document.querySelector('.countdown');
     const countdownNumber = countdownDiv.innerHTML;
     const newNumber = Number(countdownNumber) - 1;
     countdownDiv.innerHTML = newNumber;
   }
 
   addThumbnailOverlay () {
-    const overlay = document.querySelector('[data-hash-id="' + this.video.hashedId() + '"]');
-    overlay.style.display = 'block';
+    const thumbnailOverlay = document.querySelector('[data-hash-id="' + this.video.hashedId() + '"]');
+    thumbnailOverlay.style.display = 'block';
     return this.video.unbind;
   }
 
   removeThumbnailOverlay () {
-    const overlay = document.querySelector('[data-hash-id="' + this.video.hashedId() + '"]');
-    overlay.style.display = 'none';
-    const mediaItem = overlay.closest('.media');
+    // remove thumbnail overlay
+    const thumbnailOverlay = document.querySelector('[data-hash-id="' + this.video.hashedId() + '"]');
+    thumbnailOverlay.style.display = 'none';
+
+    // move thumbnail to bottom of list
+    const mediaItem = thumbnailOverlay.closest('.media');
     document.querySelector('#medias').appendChild(mediaItem);
   }
 
-  isOpen () {
-    return this._isOpen;
-  }
-
-  open () {
-    this._isOpen = true;
-    this.overlay.style.display = 'block';
-  }
-
   close (countdownInterval) {
-    this._isOpen = false;
     this.overlay.style.display = 'none';
     clearInterval(countdownInterval);
     this.video.play();
-  }
-
-  toggle () {
-    if (this.isOpen()) {
-      this.close();
-    } else {
-      this.open();
-    }
   }
 }
 
@@ -116,23 +105,17 @@ window.wistiaInitQueue.push(function(W) {
 (function() {
   document.addEventListener(
     'DOMContentLoaded',
-    function() {
+    () => {
       Utils.getMedias().then((medias) => {
         if (!medias) {
           return;
         }
 
         var videoIds = medias.data.map((media) => (media.id));
-
         Utils.getSettings(videoIds).then((settings) => {
           var visibleMedias = medias.data.filter((media) => {
             var setting = settings.data.find((setting) => (setting.video_id == media.id));
-            
-            if (!setting) {
-              return true;
-            }
-
-            return setting.visible;
+            return !setting ? true : setting.visible;
           });
 
           document

@@ -16,6 +16,16 @@ var Dashboard = {
     });
   },
 
+  toggleVisibilityIcons: function(mediaEl, isVisible) {
+    if (isVisible) {
+      mediaEl.querySelector('.media--visible').style.display = 'block';
+      mediaEl.querySelector('.media--hidden').style.display = 'none';
+    } else {
+      mediaEl.querySelector('.media--visible').style.display = 'none';
+      mediaEl.querySelector('.media--hidden').style.display = 'block';
+    }
+  },
+
   renderMedia: function(media, setting) {
     var template = document.getElementById('media-template');
     var clone = template.content.cloneNode(true);
@@ -26,13 +36,14 @@ var Dashboard = {
     el.querySelector('.duration').innerText = Utils.formatTime(media.duration);
     el.querySelector('.count').innerText = '?';
     el.setAttribute('data-hashed-id', media.hashed_id);
+    // add video id to select element easily
     el.querySelector('.visibility-toggle').setAttribute('data-video-id', media.id);
-    el.querySelector('.visibility-toggle').setAttribute('data-visible', setting && setting.visible);
+    // set data-visible so we have initial value
+    // if no record for the video, default is { visible: true }
+    el.querySelector('.visibility-toggle').setAttribute('data-visible', (setting && setting.visible) || !setting);
 
-    if (setting && !setting.visible) {
-      el.querySelector('.media--visible').style.display = 'none';
-      el.querySelector('.media--hidden').style.display = 'block';
-    }
+    // show the correct icon
+    this.toggleVisibilityIcons(el, (setting && setting.visible) || !setting);
 
     this.renderTags(el, ['tag-1', 'tag-2']);
 
@@ -59,7 +70,6 @@ var Dashboard = {
     () => {
       Utils.getMedias().then((medias) => {
         var videoIds = medias.data.map((media) => (media.id));
-
         Utils.getSettings(videoIds).then((settings) => {
           medias.data.map(function(media) {
             var setting = settings.data.find((setting) => (setting.video_id == media.id));
@@ -73,24 +83,19 @@ var Dashboard = {
 
   document.addEventListener(
     'click',
-    function(event) {
+    (event) => {
       if (event && event.target.matches('.visibility-toggle')) {
         var toggleBtn = event.target;
         var videoId = toggleBtn.getAttribute('data-video-id');
-        var newVisibility = !toggleBtn.getAttribute('data-visible');
+        var newVisibility = toggleBtn.getAttribute('data-visible') == "true" ? false : true;
+        
         return axios.put(
           '/video_settings/'+ videoId, 
           { visible: newVisibility }, 
           { headers: { 'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content } 
         }).then(function(_) {
           toggleBtn.setAttribute('data-visible', newVisibility);
-          if (!newVisibility) {
-            toggleBtn.querySelector('.media--visible').style.display = 'none';
-            toggleBtn.querySelector('.media--hidden').style.display = 'block';
-          } else {
-            toggleBtn.querySelector('.media--visible').style.display = 'block';
-            toggleBtn.querySelector('.media--hidden').style.display = 'none';
-          }
+          Dashboard.toggleVisibilityIcons(toggleBtn, newVisibility);
         });
       }
 
