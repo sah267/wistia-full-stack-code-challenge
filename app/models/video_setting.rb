@@ -1,0 +1,2 @@
+class VideoSetting < ApplicationRecord
+end
